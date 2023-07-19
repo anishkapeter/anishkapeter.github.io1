@@ -1,0 +1,16 @@
+---
+title: "index"
+author: "Anishka Peter"
+date: "2023-07-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## About Me 
+Hello, my name is Anishka Peter. I was born in Ohio and then moved to Texas when I was little. I enjoy playing guitar, singing, and cooking. I also enjoy travelling around the world and I especially like visiting my family in India. I graduated my undergrad with a B.A in mathematics from the University of Oklahoma in December. I now attend Southern Methodist University working on my masters in Data Science.
+
+The Other tabs represent work/analyses that I have completed. Please check them out!
