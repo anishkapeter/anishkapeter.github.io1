@@ -248,7 +248,7 @@ $(document).ready(function () {
   <a href="index.html">About Me</a>
 </li>
 <li>
-  <a href="Budewiser-Analysis-Code.html">Beers and Breweries Analysis</a>
+  <a href="Budweiser-Analysis-Code.html">Beers and Breweries Analysis</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -276,22 +276,78 @@ We were given two datasets about beers and breweries and we are excited
 to present to you our findings. We first cleaned that data and addressed
 any missing values. Using that cleaned data, we found various insights
 such as the beers and breweries by state and style. We will include
-insights about AVB and IBU as well.Additionally here is an interative app 
-that has some plots that are in the rest of the report </p>
-<p><a href = "https://anishkapeter.shinyapps.io/BudweiserApp/"> Budweiser App</a> </p>
+insights about AVB and IBU as well.</p>
 </div>
 <div id="load-packages" class="section level2">
 <h2>Load Packages</h2>
 <pre class="r"><code># packages
-library(tidyverse)
-library(plotly)
-library(ggpmisc) # stat_poly_eq
-library(patchwork) # combining plots
-library(e1071) # knn
-library(caret) # knn
-library(class) # knn
-library(GGally) # ggpairs
-library(dplyr)</code></pre>
+library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;readr&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;purrr&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;stringr&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;forcats&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Warning: package &#39;lubridate&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## -- Attaching core tidyverse packages ------------------------------------------- tidyverse 2.0.0 --
+## v dplyr     1.1.2     v readr     2.1.4
+## v forcats   1.0.0     v stringr   1.5.0
+## v ggplot2   3.4.2     v tibble    3.2.1
+## v lubridate 1.9.2     v tidyr     1.3.0
+## v purrr     1.0.1     
+## -- Conflicts ------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+## i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(plotly)</code></pre>
+<pre><code>## Warning: package &#39;plotly&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;
+## 
+## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## 
+## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>library(ggpmisc) # stat_poly_eq</code></pre>
+<pre><code>## Warning: package &#39;ggpmisc&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Loading required package: ggpp</code></pre>
+<pre><code>## Warning: package &#39;ggpp&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;ggpp&#39;
+## 
+## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     annotate</code></pre>
+<pre class="r"><code>library(patchwork) # combining plots</code></pre>
+<pre><code>## Warning: package &#39;patchwork&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>library(e1071) # knn</code></pre>
+<pre><code>## Warning: package &#39;e1071&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>library(caret) # knn</code></pre>
+<pre><code>## Warning: package &#39;caret&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Loading required package: lattice
+## 
+## Attaching package: &#39;caret&#39;
+## 
+## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     lift</code></pre>
+<pre class="r"><code>library(class) # knn
+library(GGally) # ggpairs</code></pre>
+<pre><code>## Warning: package &#39;GGally&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;GGally&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
 </div>
 <div id="load-datasets" class="section level2">
 <h2>Load Datasets</h2>
@@ -304,20 +360,13 @@ beers &lt;- read.csv(&quot;https://raw.githubusercontent.com/anishkapeter/DDS_Bu
 <p>We are grouping all the breweries by state and then plotting a bar
 plot with the counts for the states.</p>
 <pre class="r"><code>head(breweries)</code></pre>
-<pre><code>##   Brew_ID                      Name          City
-## 1       1        NorthGate Brewing    Minneapolis
-## 2       2 Against the Grain Brewery    Louisville
-## 3       3  Jack&#39;s Abby Craft Lagers    Framingham
-## 4       4 Mike Hess Brewing Company     San Diego
-## 5       5   Fort Point Beer Company San Francisco
-## 6       6     COAST Brewing Company    Charleston
-##   State
-## 1    MN
-## 2    KY
-## 3    MA
-## 4    CA
-## 5    CA
-## 6    SC</code></pre>
+<pre><code>##   Brew_ID                      Name          City State
+## 1       1        NorthGate Brewing    Minneapolis    MN
+## 2       2 Against the Grain Brewery    Louisville    KY
+## 3       3  Jack&#39;s Abby Craft Lagers    Framingham    MA
+## 4       4 Mike Hess Brewing Company     San Diego    CA
+## 5       5   Fort Point Beer Company San Francisco    CA
+## 6       6     COAST Brewing Company    Charleston    SC</code></pre>
 <pre class="r"><code>dim(breweries) # 558 4</code></pre>
 <pre><code>## [1] 558   4</code></pre>
 <pre class="r"><code>breweries_by_state &lt;- 
@@ -398,20 +447,13 @@ beers_and_breweries &lt;- rename(beers_and_breweries,Beer_Name=&quot;Name.x&quot
 beers_and_breweries_original &lt;- beers_and_breweries  
 
 head(beers_and_breweries,6)</code></pre>
-<pre><code>##   Brewery_id     Beer_Name Beer_ID   ABV IBU
-## 1          1  Get Together    2692 0.045  50
-## 2          1 Maggie&#39;s Leap    2691 0.049  26
-## 3          1    Wall&#39;s End    2690 0.048  19
-## 4          1       Pumpion    2689 0.060  38
-## 5          1    Stronghold    2688 0.060  25
-## 6          1   Parapet ESB    2687 0.056  47
-##                                 Style Ounces
-## 1                        American IPA     16
-## 2                  Milk / Sweet Stout     16
-## 3                   English Brown Ale     16
-## 4                         Pumpkin Ale     16
-## 5                     American Porter     16
-## 6 Extra Special / Strong Bitter (ESB)     16
+<pre><code>##   Brewery_id     Beer_Name Beer_ID   ABV IBU                               Style Ounces
+## 1          1  Get Together    2692 0.045  50                        American IPA     16
+## 2          1 Maggie&#39;s Leap    2691 0.049  26                  Milk / Sweet Stout     16
+## 3          1    Wall&#39;s End    2690 0.048  19                   English Brown Ale     16
+## 4          1       Pumpion    2689 0.060  38                         Pumpkin Ale     16
+## 5          1    Stronghold    2688 0.060  25                     American Porter     16
+## 6          1   Parapet ESB    2687 0.056  47 Extra Special / Strong Bitter (ESB)     16
 ##         Brewery_Name        City State
 ## 1 NorthGate Brewing  Minneapolis    MN
 ## 2 NorthGate Brewing  Minneapolis    MN
@@ -420,20 +462,13 @@ head(beers_and_breweries,6)</code></pre>
 ## 5 NorthGate Brewing  Minneapolis    MN
 ## 6 NorthGate Brewing  Minneapolis    MN</code></pre>
 <pre class="r"><code>tail(beers_and_breweries,6)</code></pre>
-<pre><code>##      Brewery_id                 Beer_Name Beer_ID
-## 2405        556             Pilsner Ukiah      98
-## 2406        557  Heinnieweisse Weissebier      52
-## 2407        557           Snapperhead IPA      51
-## 2408        557         Moo Thunder Stout      50
-## 2409        557         Porkslap Pale Ale      49
-## 2410        558 Urban Wilderness Pale Ale      30
-##        ABV IBU                   Style Ounces
-## 2405 0.055  NA         German Pilsener     12
-## 2406 0.049  NA              Hefeweizen     12
-## 2407 0.068  NA            American IPA     12
-## 2408 0.049  NA      Milk / Sweet Stout     12
-## 2409 0.043  NA American Pale Ale (APA)     12
-## 2410 0.049  NA        English Pale Ale     12
+<pre><code>##      Brewery_id                 Beer_Name Beer_ID   ABV IBU                   Style Ounces
+## 2405        556             Pilsner Ukiah      98 0.055  NA         German Pilsener     12
+## 2406        557  Heinnieweisse Weissebier      52 0.049  NA              Hefeweizen     12
+## 2407        557           Snapperhead IPA      51 0.068  NA            American IPA     12
+## 2408        557         Moo Thunder Stout      50 0.049  NA      Milk / Sweet Stout     12
+## 2409        557         Porkslap Pale Ale      49 0.043  NA American Pale Ale (APA)     12
+## 2410        558 Urban Wilderness Pale Ale      30 0.049  NA        English Pale Ale     12
 ##                       Brewery_Name          City State
 ## 2405         Ukiah Brewing Company         Ukiah    CA
 ## 2406       Butternuts Beer and Ale Garrattsville    NY
@@ -528,20 +563,13 @@ missing_style &lt;- missing_style[missing_style$Beer_ID != 1790,] # It looks lik
 beers_and_breweries &lt;- rbind(no_missing_style,missing_style) # 2356
 # Merged data frame with filled in Styles but still missing ABV and IBU
 head(beers_and_breweries)</code></pre>
-<pre><code>##   Brewery_id     Beer_Name Beer_ID   ABV IBU
-## 1          1  Get Together    2692 0.045  50
-## 2          1 Maggie&#39;s Leap    2691 0.049  26
-## 3          1    Wall&#39;s End    2690 0.048  19
-## 4          1       Pumpion    2689 0.060  38
-## 5          1    Stronghold    2688 0.060  25
-## 6          1   Parapet ESB    2687 0.056  47
-##                                 Style Ounces
-## 1                        American IPA     16
-## 2                  Milk / Sweet Stout     16
-## 3                   English Brown Ale     16
-## 4                         Pumpkin Ale     16
-## 5                     American Porter     16
-## 6 Extra Special / Strong Bitter (ESB)     16
+<pre><code>##   Brewery_id     Beer_Name Beer_ID   ABV IBU                               Style Ounces
+## 1          1  Get Together    2692 0.045  50                        American IPA     16
+## 2          1 Maggie&#39;s Leap    2691 0.049  26                  Milk / Sweet Stout     16
+## 3          1    Wall&#39;s End    2690 0.048  19                   English Brown Ale     16
+## 4          1       Pumpion    2689 0.060  38                         Pumpkin Ale     16
+## 5          1    Stronghold    2688 0.060  25                     American Porter     16
+## 6          1   Parapet ESB    2687 0.056  47 Extra Special / Strong Bitter (ESB)     16
 ##         Brewery_Name        City State
 ## 1 NorthGate Brewing  Minneapolis    MN
 ## 2 NorthGate Brewing  Minneapolis    MN
@@ -550,20 +578,13 @@ head(beers_and_breweries)</code></pre>
 ## 5 NorthGate Brewing  Minneapolis    MN
 ## 6 NorthGate Brewing  Minneapolis    MN</code></pre>
 <pre class="r"><code>tail(beers_and_breweries)</code></pre>
-<pre><code>##      Brewery_id                      Beer_Name Beer_ID
-## 2351        557                Snapperhead IPA      51
-## 2352        557              Moo Thunder Stout      50
-## 2353        557              Porkslap Pale Ale      49
-## 2354        558      Urban Wilderness Pale Ale      30
-## 2355         67                  OktoberFiesta    2527
-## 3100        161 Kilt Lifter Scottish-Style Ale    1635
-##        ABV IBU                   Style Ounces
-## 2351 0.068  NA            American IPA     12
-## 2352 0.049  NA      Milk / Sweet Stout     12
-## 2353 0.043  NA American Pale Ale (APA)     12
-## 2354 0.049  NA        English Pale Ale     12
-## 2355 0.053  27    Märzen / Oktoberfest     12
-## 3100 0.060  21            Scottish Ale     12
+<pre><code>##      Brewery_id                      Beer_Name Beer_ID   ABV IBU                   Style Ounces
+## 2351        557                Snapperhead IPA      51 0.068  NA            American IPA     12
+## 2352        557              Moo Thunder Stout      50 0.049  NA      Milk / Sweet Stout     12
+## 2353        557              Porkslap Pale Ale      49 0.043  NA American Pale Ale (APA)     12
+## 2354        558      Urban Wilderness Pale Ale      30 0.049  NA        English Pale Ale     12
+## 2355         67                  OktoberFiesta    2527 0.053  27    Märzen / Oktoberfest     12
+## 3100        161 Kilt Lifter Scottish-Style Ale    1635 0.060  21            Scottish Ale     12
 ##                       Brewery_Name          City State
 ## 2351       Butternuts Beer and Ale Garrattsville    NY
 ## 2352       Butternuts Beer and Ale Garrattsville    NY
@@ -672,8 +693,7 @@ beers_and_breweries_original %&gt;% filter(Style %in% popular_styles) %&gt;%
         plot.title  = element_text(color = &quot;#13294b&quot;,size = 18),
         axis.ticks.y= element_blank()) +
         scale_fill_manual(values = colors)</code></pre>
-<pre><code>## Warning: Removed 27 rows containing non-finite values
-## (`stat_boxplot()`).</code></pre>
+<pre><code>## Warning: Removed 27 rows containing non-finite values (`stat_boxplot()`).</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-9-5.png" width="672" /></p>
 </div>
 <div id="missing-ibu" class="section level3">
@@ -745,8 +765,7 @@ beers_and_breweries %&gt;% filter(Style %in% popular_styles) %&gt;%
         legend.text = element_text(size=15),
         legend.title = element_text(size=15))+
         scale_fill_manual(values = colors)</code></pre>
-<pre><code>## Warning: Removed 348 rows containing missing values
-## (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 348 rows containing missing values (`geom_point()`).</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code># Popular Styles colored by IBU, Boxplot
 beers_and_breweries %&gt;% filter(Style %in% popular_styles) %&gt;%
@@ -763,8 +782,7 @@ beers_and_breweries %&gt;% filter(Style %in% popular_styles) %&gt;%
         legend.title = element_text(size=10)) +
         scale_fill_manual(values = colors) +
   guides(fill = guide_legend(reverse=TRUE))</code></pre>
-<pre><code>## Warning: Removed 348 rows containing non-finite values
-## (`stat_boxplot()`).</code></pre>
+<pre><code>## Warning: Removed 348 rows containing non-finite values (`stat_boxplot()`).</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
 <pre class="r"><code>#CONCLUSION: The IBU&#39;s for each beer style seem to be clusered together, so IBU is based on the Style </code></pre>
 </div>
@@ -787,65 +805,37 @@ med_abv_per_style &lt;- non_missing_abv %&gt;% # Looks like low alcohol beer eve
 missing_abv &lt;- merge(missing_abv,med_abv_per_style,by=&quot;Style&quot;)
 missing_abv$ABV &lt;- missing_abv$med
 head(missing_abv)</code></pre>
-<pre><code>##                      Style Brewery_id
-## 1 American Amber / Red Ale         64
-## 2 American Amber / Red Ale        549
-## 3 American Amber / Red Ale         64
-## 4 American Amber / Red Ale        489
-## 5 American Amber / Red Ale         78
-## 6 American Amber / Red Ale        152
-##                        Beer_Name Beer_ID   ABV IBU
-## 1                 Boohai Red Ale     940 0.055  NA
-## 2               Liquid Amber Ale      64 0.055  NA
-## 3 WinterWonderGrass Festival Ale    1163 0.055  NA
-## 4  Dock Street Amber Beer (1992)     944 0.055  NA
-## 5                     Van Dayum!    2488 0.055  NA
-## 6                  Fort Pitt Ale    2322 0.055  NA
-##   Ounces                   Brewery_Name         City
-## 1     12 Crazy Mountain Brewing Company      Edwards
-## 2     12       Prescott Brewing Company     Prescott
-## 3     12 Crazy Mountain Brewing Company      Edwards
-## 4     12            Dock Street Brewery Philadelphia
-## 5     12               Blue Owl Brewing       Austin
-## 6     12      Fort Pitt Brewing Company      Latrobe
-##   State   med
-## 1    CO 0.055
-## 2    AZ 0.055
-## 3    CO 0.055
-## 4    PA 0.055
-## 5    TX 0.055
-## 6    PA 0.055</code></pre>
+<pre><code>##                      Style Brewery_id                      Beer_Name Beer_ID   ABV IBU Ounces
+## 1 American Amber / Red Ale         64                 Boohai Red Ale     940 0.055  NA     12
+## 2 American Amber / Red Ale        549               Liquid Amber Ale      64 0.055  NA     12
+## 3 American Amber / Red Ale         64 WinterWonderGrass Festival Ale    1163 0.055  NA     12
+## 4 American Amber / Red Ale        489  Dock Street Amber Beer (1992)     944 0.055  NA     12
+## 5 American Amber / Red Ale         78                     Van Dayum!    2488 0.055  NA     12
+## 6 American Amber / Red Ale        152                  Fort Pitt Ale    2322 0.055  NA     12
+##                     Brewery_Name         City State   med
+## 1 Crazy Mountain Brewing Company      Edwards    CO 0.055
+## 2       Prescott Brewing Company     Prescott    AZ 0.055
+## 3 Crazy Mountain Brewing Company      Edwards    CO 0.055
+## 4            Dock Street Brewery Philadelphia    PA 0.055
+## 5               Blue Owl Brewing       Austin    TX 0.055
+## 6      Fort Pitt Brewing Company      Latrobe    PA 0.055</code></pre>
 <pre class="r"><code>missing_abv$med &lt;- NULL
 beers_and_breweries &lt;- rbind(missing_abv,non_missing_abv) # 2356
 head(beers_and_breweries)</code></pre>
-<pre><code>##                      Style Brewery_id
-## 1 American Amber / Red Ale         64
-## 2 American Amber / Red Ale        549
-## 3 American Amber / Red Ale         64
-## 4 American Amber / Red Ale        489
-## 5 American Amber / Red Ale         78
-## 6 American Amber / Red Ale        152
-##                        Beer_Name Beer_ID   ABV IBU
-## 1                 Boohai Red Ale     940 0.055  NA
-## 2               Liquid Amber Ale      64 0.055  NA
-## 3 WinterWonderGrass Festival Ale    1163 0.055  NA
-## 4  Dock Street Amber Beer (1992)     944 0.055  NA
-## 5                     Van Dayum!    2488 0.055  NA
-## 6                  Fort Pitt Ale    2322 0.055  NA
-##   Ounces                   Brewery_Name         City
-## 1     12 Crazy Mountain Brewing Company      Edwards
-## 2     12       Prescott Brewing Company     Prescott
-## 3     12 Crazy Mountain Brewing Company      Edwards
-## 4     12            Dock Street Brewery Philadelphia
-## 5     12               Blue Owl Brewing       Austin
-## 6     12      Fort Pitt Brewing Company      Latrobe
-##   State
-## 1    CO
-## 2    AZ
-## 3    CO
-## 4    PA
-## 5    TX
-## 6    PA</code></pre>
+<pre><code>##                      Style Brewery_id                      Beer_Name Beer_ID   ABV IBU Ounces
+## 1 American Amber / Red Ale         64                 Boohai Red Ale     940 0.055  NA     12
+## 2 American Amber / Red Ale        549               Liquid Amber Ale      64 0.055  NA     12
+## 3 American Amber / Red Ale         64 WinterWonderGrass Festival Ale    1163 0.055  NA     12
+## 4 American Amber / Red Ale        489  Dock Street Amber Beer (1992)     944 0.055  NA     12
+## 5 American Amber / Red Ale         78                     Van Dayum!    2488 0.055  NA     12
+## 6 American Amber / Red Ale        152                  Fort Pitt Ale    2322 0.055  NA     12
+##                     Brewery_Name         City State
+## 1 Crazy Mountain Brewing Company      Edwards    CO
+## 2       Prescott Brewing Company     Prescott    AZ
+## 3 Crazy Mountain Brewing Company      Edwards    CO
+## 4            Dock Street Brewery Philadelphia    PA
+## 5               Blue Owl Brewing       Austin    TX
+## 6      Fort Pitt Brewing Company      Latrobe    PA</code></pre>
 </div>
 <div id="impute-missing-ibu" class="section level4">
 <h4>Impute Missing IBU</h4>
@@ -1051,93 +1041,49 @@ we let if the name of the beer had the word “Ale” in it to decide.</p>
                                                        grepl(&quot;IPA&quot;,beers_and_breweries$Beer_Name) | 
                                                        grepl(&quot;india pale ale&quot;,beers_and_breweries$Beer_Name,ignore.case = T))])
 beers_and_breweries[beers_and_breweries$Style == &quot;Scottish Ale&quot; &amp; grepl(&quot;IPA&quot;,beers_and_breweries$Beer_Name), ] # Doesn&#39;t seem like an IPA</code></pre>
-<pre><code>##             Style Brewery_id         Beer_Name Beer_ID
-## 1659 Scottish Ale        336 Stone&#39;s Throw IPA    1435
-##        ABV IBU Ounces          Brewery_Name  City
-## 1659 0.045  19     12 Fargo Brewing Company Fargo
-##      State
-## 1659    ND</code></pre>
+<pre><code>##             Style Brewery_id         Beer_Name Beer_ID   ABV IBU Ounces          Brewery_Name
+## 1659 Scottish Ale        336 Stone&#39;s Throw IPA    1435 0.045  19     12 Fargo Brewing Company
+##       City State
+## 1659 Fargo    ND</code></pre>
 <pre class="r"><code>beers_and_breweries[beers_and_breweries$Style == &quot;American Black Ale&quot; &amp; grepl(&quot;IPA&quot;,beers_and_breweries$Beer_Name), ] # Also called Black IPA, so I&#39;d consider an IPA</code></pre>
-<pre><code>##                   Style Brewery_id
-## 920  American Black Ale        157
-## 1129 American Black Ale        193
-## 1918 American Black Ale        393
-## 1934 American Black Ale        398
-## 1936 American Black Ale        398
-## 1989 American Black Ale        420
-## 2258 American Black Ale        516
-## 84   American Black Ale        131
-## 93   American Black Ale        414
-## 94   American Black Ale        207
-## 96   American Black Ale        315
-##                                      Beer_Name Beer_ID
-## 920                          Mothman Black IPA    2313
-## 1129              Dark Voyage Black IPA (2013)    2227
-## 1918                                 Black IPA     967
-## 1934                            CAPT Black IPA    1478
-## 1936                            CAPT Black IPA     883
-## 1989                         Sanitas Black IPA    1391
-## 2258                         Eclipse Black IPA     556
-## 84                               Black Hop IPA    2368
-## 93   Heavy Machinery IPA Series #1: Heavy Fist    1409
-## 94                    Next Adventure Black IPA    1566
-## 96                           Masked Bandit IPA    1540
-##        ABV IBU Ounces
-## 920  0.067  71     12
-## 1129 0.065  80     12
-## 1918 0.071  95     12
-## 1934 0.073  55     12
-## 1936 0.073  55     16
-## 1989 0.068  65     12
-## 2258 0.077  71     16
-## 84   0.068  73     12
-## 93   0.070  73     16
-## 94   0.062  73     16
-## 96   0.070  73     16
-##                           Brewery_Name       City
-## 920  Greenbrier Valley Brewing Company  Lewisburg
-## 1129                   Capital Brewery  Middleton
-## 1918          Santa Fe Brewing Company   Santa Fe
-## 1934           Ruhstaller Beer Company Sacramento
-## 1936           Ruhstaller Beer Company Sacramento
-## 1989           Sanitas Brewing Company    Boulder
-## 2258          Crabtree Brewing Company    Greeley
-## 84             Shebeen Brewing Company    Wolcott
-## 93                    Austin Beerworks     Austin
-## 94                 Fort George Brewery    Astoria
-## 96         Piney River Brewing Company    Bucryus
-##      State
-## 920     WV
-## 1129    WI
-## 1918    NM
-## 1934    CA
-## 1936    CA
-## 1989    CO
-## 2258    CO
-## 84      CT
-## 93      TX
-## 94      OR
-## 96      MO</code></pre>
+<pre><code>##                   Style Brewery_id                                 Beer_Name Beer_ID   ABV IBU
+## 920  American Black Ale        157                         Mothman Black IPA    2313 0.067  71
+## 1129 American Black Ale        193              Dark Voyage Black IPA (2013)    2227 0.065  80
+## 1918 American Black Ale        393                                 Black IPA     967 0.071  95
+## 1934 American Black Ale        398                            CAPT Black IPA    1478 0.073  55
+## 1936 American Black Ale        398                            CAPT Black IPA     883 0.073  55
+## 1989 American Black Ale        420                         Sanitas Black IPA    1391 0.068  65
+## 2258 American Black Ale        516                         Eclipse Black IPA     556 0.077  71
+## 84   American Black Ale        131                             Black Hop IPA    2368 0.068  73
+## 93   American Black Ale        414 Heavy Machinery IPA Series #1: Heavy Fist    1409 0.070  73
+## 94   American Black Ale        207                  Next Adventure Black IPA    1566 0.062  73
+## 96   American Black Ale        315                         Masked Bandit IPA    1540 0.070  73
+##      Ounces                      Brewery_Name       City State
+## 920      12 Greenbrier Valley Brewing Company  Lewisburg    WV
+## 1129     12                   Capital Brewery  Middleton    WI
+## 1918     12          Santa Fe Brewing Company   Santa Fe    NM
+## 1934     12           Ruhstaller Beer Company Sacramento    CA
+## 1936     16           Ruhstaller Beer Company Sacramento    CA
+## 1989     12           Sanitas Brewing Company    Boulder    CO
+## 2258     16          Crabtree Brewing Company    Greeley    CO
+## 84       12           Shebeen Brewing Company    Wolcott    CT
+## 93       16                  Austin Beerworks     Austin    TX
+## 94       16               Fort George Brewery    Astoria    OR
+## 96       16       Piney River Brewing Company    Bucryus    MO</code></pre>
 <pre class="r"><code>IPA_Styles &lt;- IPA_Styles[IPA_Styles != &quot;Scottish Ale&quot;]
 IPA_Beers &lt;- beers_and_breweries[beers_and_breweries$Style %in% IPA_Styles,] # 627
 Ale_Styles &lt;- unique(beers_and_breweries$Style[which(grepl(&quot; ale&quot;,beers_and_breweries$Style,ignore.case = T) |
                                                        grepl(&quot; ale&quot;,beers_and_breweries$Beer_Name,ignore.case = T))])
 Ale_Styles&lt;- Ale_Styles[!(Ale_Styles %in% IPA_Styles)]
 beers_and_breweries[beers_and_breweries$Style == &quot;California Common / Steam Beer&quot; &amp; grepl(&quot;ale&quot;,beers_and_breweries$Beer_Name,ignore.case = T), ] # says it&#39;s an ale</code></pre>
-<pre><code>##                               Style Brewery_id
-## 6351 California Common / Steam Beer        221
-##                                   Beer_Name Beer_ID
-## 6351 West Portal Colorado Common Summer Ale    1422
-##        ABV IBU Ounces       Brewery_Name       City
-## 6351 0.041  41     16 Big Choice Brewing Broomfield
-##      State
-## 6351    CO</code></pre>
+<pre><code>##                               Style Brewery_id                              Beer_Name Beer_ID
+## 6351 California Common / Steam Beer        221 West Portal Colorado Common Summer Ale    1422
+##        ABV IBU Ounces       Brewery_Name       City State
+## 6351 0.041  41     16 Big Choice Brewing Broomfield    CO</code></pre>
 <pre class="r"><code>Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;California Common / Steam Beer&quot;] # This uses lager yeast
 beers_and_breweries[beers_and_breweries$Style == &quot;American India Pale Lager&quot; &amp; grepl(&quot;ale&quot;,beers_and_breweries$Beer_Name,ignore.case = T), ] # Ha, has the word &quot;pale&quot;</code></pre>
-<pre><code>##  [1] Style        Brewery_id   Beer_Name   
-##  [4] Beer_ID      ABV          IBU         
-##  [7] Ounces       Brewery_Name City        
-## [10] State       
+<pre><code>##  [1] Style        Brewery_id   Beer_Name    Beer_ID      ABV          IBU          Ounces      
+##  [8] Brewery_Name City         State       
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
 <pre class="r"><code>Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;American India Pale Lager&quot;] # Isn&#39;t an ale
 Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;American Pale Lager&quot;] # Isn&#39;t an ale
@@ -1146,14 +1092,10 @@ Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;American Amber / Red Lager&quot;
 Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;Euro Pale Lager&quot;] # Isn&#39;t an ale
 Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;Other&quot;] # Can be either
 beers_and_breweries[beers_and_breweries$Style == &quot;Chile Beer&quot;,] # beer with chilis</code></pre>
-<pre><code>##           Style Brewery_id                  Beer_Name
-## 790  Chile Beer        133 L&#39;il Lucy&#39;s Hot Pepper Ale
-## 1592 Chile Beer        315               Hot Date Ale
-## 6361 Chile Beer        425         Patty&#39;s Chile Beer
-##      Beer_ID   ABV IBU Ounces
-## 790     2341 0.049  28     12
-## 1592    1791 0.060  20     16
-## 6361    1345 0.042  24     12
+<pre><code>##           Style Brewery_id                  Beer_Name Beer_ID   ABV IBU Ounces
+## 790  Chile Beer        133 L&#39;il Lucy&#39;s Hot Pepper Ale    2341 0.049  28     12
+## 1592 Chile Beer        315               Hot Date Ale    1791 0.060  20     16
+## 6361 Chile Beer        425         Patty&#39;s Chile Beer    1345 0.042  24     12
 ##                     Brewery_Name    City State
 ## 790       Weston Brewing Company  Weston    MO
 ## 1592 Piney River Brewing Company Bucryus    MO
@@ -1162,14 +1104,10 @@ beers_and_breweries[beers_and_breweries$Style == &quot;Chile Beer&quot;,] # beer
 Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;Fruit / Vegetable Beer&quot;] # Can be either
 Ale_Styles &lt;- Ale_Styles[Ale_Styles != &quot;Baltic Porter&quot;] # Even though porters are Ales, a Baltic Porter is a Lager, good catch by Chat GPT
 unique(beers_and_breweries$Style[grepl(&quot;stout&quot;,beers_and_breweries$Style,ignore.case = T)]) # Seems stouts are missing</code></pre>
-<pre><code>## [1] &quot;Milk / Sweet Stout&quot;              
-## [2] &quot;Russian Imperial Stout&quot;          
-## [3] &quot;American Stout&quot;                  
-## [4] &quot;Foreign / Export Stout&quot;          
-## [5] &quot;Oatmeal Stout&quot;                   
-## [6] &quot;Irish Dry Stout&quot;                 
-## [7] &quot;American Double / Imperial Stout&quot;
-## [8] &quot;English Stout&quot;</code></pre>
+<pre><code>## [1] &quot;Milk / Sweet Stout&quot;               &quot;Russian Imperial Stout&quot;          
+## [3] &quot;American Stout&quot;                   &quot;Foreign / Export Stout&quot;          
+## [5] &quot;Oatmeal Stout&quot;                    &quot;Irish Dry Stout&quot;                 
+## [7] &quot;American Double / Imperial Stout&quot; &quot;English Stout&quot;</code></pre>
 <pre class="r"><code>Ale_Styles &lt;- c(Ale_Styles, &quot;Milk / Sweet Stout&quot;, &quot;Russian Imperial Stout&quot;, &quot;American Stout&quot;, &quot;Foreign / Export Stout&quot;,
                 &quot;Oatmeal Stout&quot;, &quot;Irish Dry Stout&quot;, &quot;American Double / Imperial Stout&quot;, &quot;English Stout&quot;)
 Ale_Styles &lt;- c(Ale_Styles, &quot;Dubbel&quot;, &quot;Tripel&quot;, &quot;Flanders Oud Bruin&quot;, &quot;Kristalweizen&quot;,
@@ -1244,12 +1182,9 @@ by IPA vs Ale. There is a clear distinction for IBU, and a less clear
 distinction for ABV.</p>
 <pre class="r"><code># Check if any overlaps, there shouldn&#39;t be
 merge(IPA_Beers,Ale_Beers,by=&quot;Beer_ID&quot;) # 0 rows</code></pre>
-<pre><code>##  [1] Beer_ID        Style.x        Brewery_id.x  
-##  [4] Beer_Name.x    ABV.x          IBU.x         
-##  [7] Ounces.x       Brewery_Name.x City.x        
-## [10] State.x        IPA_or_Ale.x   Style.y       
-## [13] Brewery_id.y   Beer_Name.y    ABV.y         
-## [16] IBU.y          Ounces.y       Brewery_Name.y
+<pre><code>##  [1] Beer_ID        Style.x        Brewery_id.x   Beer_Name.x    ABV.x          IBU.x         
+##  [7] Ounces.x       Brewery_Name.x City.x         State.x        IPA_or_Ale.x   Style.y       
+## [13] Brewery_id.y   Beer_Name.y    ABV.y          IBU.y          Ounces.y       Brewery_Name.y
 ## [19] City.y         State.y        IPA_or_Ale.y  
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
 <pre class="r"><code>colors = c(&quot;#c8102e&quot;,&quot;#13294b&quot;)
@@ -1307,8 +1242,7 @@ ggplot(data.frame(accuracies), aes(x = accuracies)) +
         axis.title.y =element_text(color = &quot;#13294b&quot;,size = 16), 
         plot.title  = element_text(color = &quot;#13294b&quot;,size = 18))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 20))</code></pre>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with
-## `binwidth`.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <pre class="r"><code>min(accuracies) # 86.3%, really good minimum accuracy</code></pre>
 <pre><code>## [1] 0.8849558</code></pre>
@@ -1327,8 +1261,7 @@ ggplot(data.frame(sensitivies), aes(x = sensitivies)) +
         axis.title.y =element_text(color = &quot;#13294b&quot;,size = 16), 
         plot.title  = element_text(color = &quot;#13294b&quot;,size = 18))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 20))</code></pre>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with
-## `binwidth`.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 <pre class="r"><code>min(sensitivies) # 89.2%, really good minimum accuracy</code></pre>
 <pre><code>## [1] 0.8808933</code></pre>
@@ -1347,8 +1280,7 @@ ggplot(data.frame(specificities), aes(x = specificities)) +
         axis.title.y =element_text(color = &quot;#13294b&quot;,size = 16), 
         plot.title  = element_text(color = &quot;#13294b&quot;,size = 18))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 15))</code></pre>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with
-## `binwidth`.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-19-3.png" width="672" /></p>
 <pre class="r"><code>min(specificities) # 79.7%, not as good, but still not bad</code></pre>
 <pre><code>## [1] 0.8287293</code></pre>
@@ -1447,6 +1379,10 @@ medians_by_style %&gt;% # R^2 is still only 0.44, so not much correlation here e
   geom_smooth(method=&#39;lm&#39;) +
   stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = &quot;~~~&quot;)), 
                formula = y ~ x, parse = TRUE)</code></pre>
+<pre><code>## Warning: The dot-dot notation (`..eq.label..`) was deprecated in ggplot2 3.4.0.
+## i Please use `after_stat(eq.label)` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <pre class="r"><code>medians_by_style %&gt;% # R^2 jumps up when you remove styles without much representation
@@ -1470,12 +1406,9 @@ beers_and_breweries_original %&gt;% filter(Style %in% popular_styles) %&gt;% # R
   stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = &quot;~~~&quot;)), 
                formula = y ~ x, parse = TRUE)</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 348 rows containing non-finite values
-## (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 348 rows containing non-finite values
-## (`stat_poly_eq()`).</code></pre>
-<pre><code>## Warning: Removed 348 rows containing missing values
-## (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 348 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 348 rows containing non-finite values (`stat_poly_eq()`).</code></pre>
+<pre><code>## Warning: Removed 348 rows containing missing values (`geom_point()`).</code></pre>
 <p><img src="Budweiser-Analysis-Code_files/figure-html/unnamed-chunk-22-3.png" width="672" /></p>
 <p>It does seem that the correlation becomes higher if you remove
 non-popular styles (styles with a count less than 40). It jumps even
