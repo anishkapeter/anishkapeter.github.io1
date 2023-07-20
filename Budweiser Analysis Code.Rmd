@@ -9,6 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Shiny App
+Check out this app that has interactive plots dealing with the data that is below!
+
+https://anishkapeter.shinyapps.io/BudweiserApp/
 
 ## Introduction 
 Hello, my name is Anishka Peter and my partner is Aaron Abromowitz. We were given two datasets about beers and breweries and we are excited to present to you our findings. We first cleaned that data and addressed any missing values.  Using that cleaned data, we found various insights such as the beers and breweries by state and style. We will include insights about AVB and IBU as well. 
